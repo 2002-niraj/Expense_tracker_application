@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Expance tracker</title>
+    <link rel="stylesheet" href="style.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+  href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap"
+  rel="stylesheet"
+/>
+
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css"
+      integrity="sha512-Kc323vGBEqzTmouAECnVceyQqyqdsSiqLQISBL29aUW4U/M7pSPA/gEUZQqv1cwx4OnYxTxve5UMg5GT6L4JJg=="
+      crossorigin="anonymous"
+      referrerpolicy="no-referrer"
+    />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+  <body>
+
+    <aside class="sidebar">
+      <h1 class="sidebar__heading" onclick="loadExpense()" >FreshBooks</h1>
+      <div class="profile">
+        <div class="profile__photo">
+          <img src="Media.jpg" alt="" />
+        </div>
+        <p class="profile_info">Hi,Niraj</p>
+      </div>
+      <div class="total_expance">
+        <h4 class="total_expance__title">Total Expense</h4>
+        <span
+          > Rs <span id="total"></span
+        ></span>
+      </div>
+      <button class="sidebar__button" id="add_btn">Add Expense</button>
+    </aside>
+
+    <main>
+      <section class="charts">
+        <div class="chart__container">
+          <canvas style="height: 250px" id="piechart"></canvas>
+          <canvas style="height: 250px" id="linechart"></canvas>
+        </div>
+      </section>
+
+      <section class="expance__list_show">
+        <div class="expance__list_show__heading">
+          <h3>Expense List</h3>
+          <div class="Search__list">
+            <input
+              type="text"
+              id="search"
+              class="search"
+              name="search"
+              placeholder="Search by category"
+            />
+            <button class="search_btn">
+             Search
+            </button>
+          </div>
+        </div>
+
+        <div class="expance__list__title">
+          <span id="date_">Date</span>
+          <span id="des">Title</span>
+          <span id="amt">Amount</span>
+          <span id="category_">Category</span>
+          <span id="action">Action</span>
+        </div>
+        <ul class="expance__list"></ul>
+
+        <div class="pagination">
+          <button id="prevPageBtn" class="pagination-btn">Previous</button>
+          <span id="pageNumber">1</span>
+          <button id="nextPageBtn" class="pagination-btn">Next</button>
+      </div>
+      
+      </section>
+    </main>
+
+    <div class="popup" id="popup">
+      <div class="popup__content">
+        <button class="popup__close" id="close">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+        <h3 class="popup__title">Add new expense</h3>
+        <form class="expanceform" id="expanceform">
+          <div class="label">
+            <label for="description">Title</label>
+            <p class="error" id="error1">This Field is required</p>
+            <p class="message" id="message1">Invaild desciption</p>
+          </div>
+          <input
+            type="text"
+            id="description"
+            class="description"
+            name="description"
+            required
+          />
+
+          <div class="label">
+            <label for="description">Amount (Rs)</label>
+            <p class="error" id="error2">This Field is required</p>
+            <p class="message" id="message2">invaild Amount</p>
+            <p class="message" id="message3">Amount out of range</p>
+          </div>
+          <input
+            type="number"
+            id="amount"
+            class="amount"
+            name="amount"
+            required
+          />
+
+          <div class="label">
+            <label for="date">Date</label>
+            <p class="error" id="error3">This Field is required</p>
+          </div>
+          <input
+            type="date"
+            id="date"
+            class="date"
+            name="date"
+            min="2024-01-01"
+            max="2024-11-08"
+            required
+          />
+
+          <label for="category">Category</label>
+          <select name="category" id="category" required>
+            <option value="" disabled selected>Select Priority</option>
+            <option value="Food">Food</option>
+            <option value="Travel">Travel</option>
+            <option value="Shopping">Shopping</option>
+            <option value="Health">Health</option>
+            <option value="other">Other</option>
+          </select>
+          <button type="submit" class="submit__form" id="submit_form">
+            Add Expense
+          </button>
+        </form>
+      </div>
+    </div>
+
+<div class="popup" id="editModal">
+  <div class="popup__content">
+    <button class="popup__close" id="edit-close">
+      <i class="fa-solid fa-xmark"></i>
+    </button>
+    <h3 class="popup__title">Edit Expense</h3>
+    <form id="edit-expense-form">
+      <div class="label">
+        <label for="edit-description">Title</label>
+        <input type="text" id="edit-description" name="description" required />
+      </div>
+      <div class="label">
+        <label for="edit-amount">Amount (Rs)</label>
+        <input type="number" id="edit-amount" name="amount" required />
+      </div>
+      <div class="label">
+        <label for="edit-date">Date</label>
+        <input type="date" id="edit-date" name="date" required />
+      </div>
+      <label for="edit-category">Category</label>
+      <select name="category" id="edit-category" required>
+        <option value="Food">Food</option>
+        <option value="Travel">Travel</option>
+        <option value="Shopping">Shopping</option>
+        <option value="Health">Health</option>
+        <option value="Other">Other</option>
+      </select>
+      <button type="submit" class="submit__form">Save Changes</button>
+    </form>
+  </div>
+</div>
+
+
+    
+
+    
+    <script src="index.js"></script>
+  </body>
+</html>
